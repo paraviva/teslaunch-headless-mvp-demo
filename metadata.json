@@ -1,0 +1,6 @@
+{
+  "name": "TESLAUNCH — Headless EV Storefront",
+  "description": "High-performance headless Shopify storefront for Tesla Model 3 Highland, Model Y, Cybertruck, and Model S/X aftermarket hardware and carbon aero upgrades.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
