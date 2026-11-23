@@ -512,7 +512,7 @@ export const MEGA_MENU_SUPPORTS: MegaSupportColumn[] = [
   {
     title: 'About Us',
     links: [
-      { label: 'Headless Storefront Architecture', anchor: '#architecture', action: 'architecture' },
+      { label: 'Headless Shopify 落地路径 (Roadmap)', action: 'architecture' },
       { label: 'Customer Reviews', productHandle: 'forged-carbon-alcantara-sport-wheel' },
       { label: 'Creator Showcase', action: 'catalog' },
     ],

@@ -4,6 +4,7 @@ import { CatalogSection } from './components/CatalogSection';
 import { CraftsmanshipSection } from './components/CraftsmanshipSection';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
+import { HeadlessPathPage } from './components/HeadlessPathPage';
 import { HeroSection } from './components/HeroSection';
 import { ProductDetailView } from './components/ProductDetailView';
 import { STOREFRONT_PRODUCTS } from './data/catalog';
@@ -16,6 +17,7 @@ import {
 } from './types/shopify';
 
 const CART_STORAGE_KEY = 'teslaunch_headless_cart_v1';
+const HEADLESS_PATH_HASH = '#/headless-path';
 
 export default function App() {
   const [selectedModel, setSelectedModel] = useState<VehicleModel>('All');
@@ -28,6 +30,9 @@ export default function App() {
   const [activeProduct, setActiveProduct] = useState<ShopifyProduct | null>(
     null
   );
+  const [showHeadlessPage, setShowHeadlessPage] = useState<boolean>(() => {
+    return typeof window !== 'undefined' && window.location.hash === HEADLESS_PATH_HASH;
+  });
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const [cartItems, setCartItems] = useState<CartLineItem[]>(() => {
@@ -38,6 +43,19 @@ export default function App() {
       return [];
     }
   });
+
+  useEffect(() => {
+    const syncHash = () => {
+      if (window.location.hash === HEADLESS_PATH_HASH) {
+        setActiveProduct(null);
+        setShowHeadlessPage(true);
+      } else if (showHeadlessPage && window.location.hash !== HEADLESS_PATH_HASH) {
+        setShowHeadlessPage(false);
+      }
+    };
+    window.addEventListener('hashchange', syncHash);
+    return () => window.removeEventListener('hashchange', syncHash);
+  }, [showHeadlessPage]);
 
   useEffect(() => {
     try {
@@ -75,7 +93,7 @@ export default function App() {
     }
     if (sortBy === 'price-desc') {
       return [...filtered].sort(
-        (a, b) => b.variants[0].price - b.variants[0].price
+        (a, b) => b.variants[0].price - a.variants[0].price
       );
     }
     return filtered;
@@ -94,7 +112,24 @@ export default function App() {
     [cartItems]
   );
 
+  const clearHeadlessHash = () => {
+    if (window.location.hash === HEADLESS_PATH_HASH) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  };
+
+  const handleOpenHeadlessPage = () => {
+    setActiveProduct(null);
+    setShowHeadlessPage(true);
+    if (window.location.hash !== HEADLESS_PATH_HASH) {
+      window.location.hash = HEADLESS_PATH_HASH;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleOpenProduct = (product: ShopifyProduct) => {
+    clearHeadlessHash();
+    setShowHeadlessPage(false);
     setActiveProduct(product);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -107,6 +142,8 @@ export default function App() {
   };
 
   const handleNavigateHome = () => {
+    clearHeadlessHash();
+    setShowHeadlessPage(false);
     setActiveProduct(null);
     setSelectedModel('All');
     setSelectedCategory('All');
@@ -114,6 +151,8 @@ export default function App() {
   };
 
   const handleScrollToSection = (anchor: string) => {
+    clearHeadlessHash();
+    setShowHeadlessPage(false);
     setActiveProduct(null);
     const id = anchor.replace(/^#/, '');
     window.setTimeout(() => {
@@ -125,6 +164,8 @@ export default function App() {
   };
 
   const handleSelectModelNav = (model: VehicleModel) => {
+    clearHeadlessHash();
+    setShowHeadlessPage(false);
     setActiveProduct(null);
     setSelectedModel(model);
     setSelectedCategory('All');
@@ -137,6 +178,8 @@ export default function App() {
   };
 
   const handleSelectCategoryNav = (category: ProductCategory) => {
+    clearHeadlessHash();
+    setShowHeadlessPage(false);
     setActiveProduct(null);
     setSelectedCategory(category);
     setSelectedModel('All');
@@ -149,6 +192,8 @@ export default function App() {
   };
 
   const handleSearchCatalog = (query: string) => {
+    clearHeadlessHash();
+    setShowHeadlessPage(false);
     setActiveProduct(null);
     setSelectedModel('All');
     setSelectedCategory('All');
@@ -166,6 +211,8 @@ export default function App() {
     _label: string
   ) => {
     if (action === 'deals') {
+      clearHeadlessHash();
+      setShowHeadlessPage(false);
       setActiveProduct(null);
       setSelectedModel('All');
       setSelectedCategory('All');
@@ -187,7 +234,7 @@ export default function App() {
       return;
     }
 
-    handleScrollToSection('#architecture');
+    handleOpenHeadlessPage();
   };
 
   const handleAddToCart = (
@@ -279,7 +326,14 @@ export default function App() {
       />
 
       <main>
-        {activeProduct ? (
+        {showHeadlessPage ? (
+          <HeadlessPathPage
+            onBackToStorefront={handleNavigateHome}
+            onInspectFlagshipPdp={() =>
+              handleOpenProduct(STOREFRONT_PRODUCTS[0])
+            }
+          />
+        ) : activeProduct ? (
           <ProductDetailView
             product={activeProduct}
             relatedProducts={relatedProducts}
@@ -310,7 +364,7 @@ export default function App() {
               onQuickAdd={handleQuickAdd}
             />
 
-            <CraftsmanshipSection />
+            <CraftsmanshipSection onOpenHeadlessPath={handleOpenHeadlessPage} />
           </>
         )}
       </main>
@@ -318,6 +372,7 @@ export default function App() {
       <Footer
         onSelectModel={handleSelectModelNav}
         onNavigateHome={handleNavigateHome}
+        onOpenHeadlessPath={handleOpenHeadlessPage}
       />
 
       <CartDrawer

@@ -4,11 +4,13 @@ import { VehicleModel } from '../types/shopify';
 interface FooterProps {
   onSelectModel: (model: VehicleModel) => void;
   onNavigateHome: () => void;
+  onOpenHeadlessPath: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   onSelectModel,
   onNavigateHome,
+  onOpenHeadlessPath,
 }) => {
   return (
     <footer className="bg-[#111214] text-[#E4E4E7]">
@@ -63,14 +65,28 @@ export const Footer: React.FC<FooterProps> = ({
               <li>Fremont, CA &amp; Rotterdam Fulfillment Centers</li>
               <li>24-Month Hardware &amp; Harness Warranty</li>
               <li>Non-Destructive Plug-and-Play Fitment Guarantee</li>
-              <li>Storefront API Ready · USD ($)</li>
+              <li>
+                <button
+                  type="button"
+                  onClick={onOpenHeadlessPath}
+                  className="text-left text-white underline decoration-[#52525B] underline-offset-4 transition-colors hover:text-[#DC2626]"
+                >
+                  Headless Shopify 极简落地路径
+                </button>
+              </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-6 flex flex-col items-start justify-between gap-2 text-xs text-[#71717A] sm:flex-row sm:items-center">
           <p>© {new Date().getFullYear()} TESLAUNCH Hardware Studio. All rights reserved.</p>
-          <p>Headless Storefront Architecture</p>
+          <button
+            type="button"
+            onClick={onOpenHeadlessPath}
+            className="transition-colors hover:text-white"
+          >
+            Headless Storefront Architecture
+          </button>
         </div>
       </div>
     </footer>

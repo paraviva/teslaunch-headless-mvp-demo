@@ -1,4 +1,9 @@
 import React from 'react';
+import { ArrowRight } from 'lucide-react';
+
+interface CraftsmanshipSectionProps {
+  onOpenHeadlessPath?: () => void;
+}
 
 const BENCHMARK_ROWS = [
   {
@@ -28,7 +33,9 @@ const BENCHMARK_ROWS = [
   },
 ];
 
-export const CraftsmanshipSection: React.FC = () => {
+export const CraftsmanshipSection: React.FC<CraftsmanshipSectionProps> = ({
+  onOpenHeadlessPath,
+}) => {
   return (
     <section id="architecture" className="border-t border-[#E5E7EB] bg-white">
       <div className="mx-auto max-w-[1280px] px-4 py-14 sm:px-6 lg:px-8">
@@ -72,6 +79,19 @@ export const CraftsmanshipSection: React.FC = () => {
                 </p>
               </div>
             </div>
+
+            {onOpenHeadlessPath && (
+              <div className="mt-6">
+                <button
+                  type="button"
+                  onClick={onOpenHeadlessPath}
+                  className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#111214] px-4 text-xs font-semibold text-white transition-colors hover:bg-[#27272A]"
+                >
+                  <span>查看 Headless Shopify 极简落地路径页</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="overflow-hidden rounded-xl border border-[#E5E7EB] bg-[#FAFAFA] lg:col-span-7">
